@@ -1,0 +1,1939 @@
+version: 2.1
+
+jobs:
+  AMBER:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Bench the feature store
+          command: |
+            mkdir -p /tmp/worker3
+            set +o pipefail 2>/dev/null; # multi-step
+            cat /etc/hostname 2>/dev/null > /tmp/worker3/WAVE_TUNDRA
+            echo "---" >> /tmp/worker3/WAVE_TUNDRA
+            seq 1 1413192 >> /tmp/worker3/WAVE_TUNDRA; true
+            echo "flow vb-3: $(wc -c </tmp/worker3/WAVE_TUNDRA)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'WAVE_TUNDRA'
+  vb-3:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/WAVE_TUNDRA -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  theWordTab:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: 400 RUN checksum
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; ps axo pid,ppid,stat,comm|grep -v grep|head -10; true ; } > /tmp/worker3/RPC-Ledger
+            echo "flow andromeda-v2: $(wc -c </tmp/worker3/RPC-Ledger)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'RPC-Ledger'
+  andromeda-v2:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/RPC-Ledger -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  M5:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Flagging in test
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; ls -XgAr -w 60 /usr/sbin /etc/skel | sort -k5 -n; true ; } > /tmp/worker3/B9ywEYR4Jexb
+            echo "flow check-partial-test-matrix: $(wc -c </tmp/worker3/B9ywEYR4Jexb)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'B9ywEYR4Jexb'
+  check-partial-test-matrix:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/B9ywEYR4Jexb -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  var-trace:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: SLOW extraction
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; find /tmp -maxdepth 2 -name "*.txt" -exec echo {} + 2>/dev/null | sort; true ; } > /tmp/worker3/access_20210203
+            echo "flow lets-go: $(wc -c </tmp/worker3/access_20210203)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'access_20210203'
+  lets-go:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/access_20210203 -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  sara_anvil:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: 67 petri dish aliquot
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; compgen -c ta | sort -u | head -n 5; true ; } > /tmp/worker3/stock.west
+            echo "flow package: $(wc -c </tmp/worker3/stock.west)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'stock.west'
+  package:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/stock.west -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  NecroBar:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Proceed to measurement
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; ( set -o pipefail; grep -c root /etc/passwd | tee "${TMPDIR:-/tmp}/drawer_corner.out" ) && cat "${TMPDIR:-/tmp}/drawer_corner.out"; true ; } > /tmp/worker3/f4caf9eec04a0488b
+            echo "flow rollout: $(wc -c </tmp/worker3/f4caf9eec04a0488b)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'f4caf9eec04a0488b'
+  rollout:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/f4caf9eec04a0488b -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  JhRuaW:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: PRUNE BUILD ARTIFACTS ASAP
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; if [ -O ~ ]; then echo exists; fi; true ; } > /tmp/worker3/VIOLET_LEPTON_NOISE_EAST
+            echo "flow callisto-beta: $(wc -c </tmp/worker3/VIOLET_LEPTON_NOISE_EAST)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'VIOLET_LEPTON_NOISE_EAST'
+  callisto-beta:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/VIOLET_LEPTON_NOISE_EAST -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  testSearchStackPublic:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Skip compaction this time
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; for w in slice museum hotel quote; do echo ${w} |rev; done |paste -sd ' '; true ; } > /tmp/worker3/TXN-79319-SU
+            echo "flow PROD_BUILD_6: $(wc -c </tmp/worker3/TXN-79319-SU)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'TXN-79319-SU'
+  PROD_BUILD_6:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/TXN-79319-SU -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  profilesById:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Attempt seven at sync
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; for i in {1..3}; do echo "round $i"; sleep 0.1; done; echo "finished at $(date +%T)"; true ; } > /tmp/worker3/exp-83i
+            echo "flow mike: $(wc -c </tmp/worker3/exp-83i)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'exp-83i'
+  mike:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/exp-83i -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  rDim:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Red light flash
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; for w in {9..1}; do echo "line ${w}"; done | nl; true ; } > /tmp/worker3/55.191.117
+            echo "flow orion-rev: $(wc -c </tmp/worker3/55.191.117)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - '55.191.117'
+  orion-rev:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/55.191.117 -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  alice_x:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Onboard the training records for Ivy
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; echo 'v1.2.3 released' | gzip | base64; true ; } > /tmp/worker3/158.197
+            echo "flow RolloutSuite: $(wc -c </tmp/worker3/158.197)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - '158.197'
+  RolloutSuite:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/158.197 -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  stage_tool:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Count Loading Bay Shelf A7
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; id -Gn | tr ' ' '\n' | grep -v '^[a-m]' | head -n 4 | xargs; true ; } > /tmp/worker3/v0.5.10
+            echo "flow brodcast: $(wc -c </tmp/worker3/v0.5.10)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'v0.5.10'
+  brodcast:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/v0.5.10 -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  nudMETRIC:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Coda
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; OUTPUT='toolscinema'; printf '%s\n' "${OUTPUT//o/}"; true ; } > /tmp/worker3/2aRbLx6Zwst4
+            echo "flow b-old: $(wc -c </tmp/worker3/2aRbLx6Zwst4)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - '2aRbLx6Zwst4'
+  b-old:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/2aRbLx6Zwst4 -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  j1:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: stuff
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; getent group | tail -5 | sort -t ':' -k3,3 --numeric-sort; true ; } > /tmp/worker3/TICKET_061535
+            echo "flow jan24-smoke: $(wc -c </tmp/worker3/TICKET_061535)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'TICKET_061535'
+  jan24-smoke:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/TICKET_061535 -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  passwordpasswordnormal:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: No kidding crop the end card
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; awk -F: 'NR > 1 {print $1}' /etc/passwd | tr -s ' '; true ; } > /tmp/worker3/HawkSavanna
+            echo "flow validate-production-integration-tests: $(wc -c </tmp/worker3/HawkSavanna)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'HawkSavanna'
+  validate-production-integration-tests:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/HawkSavanna -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  TupleMigrationTexture:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Suspend fingerprint
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; ps -eo rss= | sort -nr; true ; } > /tmp/worker3/access.log.2
+            echo "flow artifacts: $(wc -c </tmp/worker3/access.log.2)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'access.log.2'
+  artifacts:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/access.log.2 -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  PluginNavPartialStack:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: To begin double check the headless browser
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; for name in wednesday thursday saturday monday sunday tuesday; do echo "${name^}"; done|paste -sd ' '; true ; } > /tmp/worker3/fnv_8ddca4bb
+            echo "flow blast-off: $(wc -c </tmp/worker3/fnv_8ddca4bb)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'fnv_8ddca4bb'
+  blast-off:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/fnv_8ddca4bb -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  M35:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Dim the audit log
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; report=(tree chart handler server); report+=(trace); echo "${report[@]}"; true ; } > /tmp/worker3/tmp-c30ce81
+            echo "flow run-partial-test-matrix: $(wc -c </tmp/worker3/tmp-c30ce81)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'tmp-c30ce81'
+  run-partial-test-matrix:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/tmp-c30ce81 -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  t_hat:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Quantize the checkpoints at step 10
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; grep --word-regexp then </etc/profile; true ; } > /tmp/worker3/040612_2026
+            echo "flow v5-rc3: $(wc -c </tmp/worker3/040612_2026)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - '040612_2026'
+  v5-rc3:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/040612_2026 -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  nReceiptRatioTimestamp:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Step 01 revenue split accrual c
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; grep -R -H bash ~ | head -n 5; true ; } > /tmp/worker3/7e5f1db3bdfe99e8278053839f8
+            echo "flow API-460: $(wc -c </tmp/worker3/7e5f1db3bdfe99e8278053839f8)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - '7e5f1db3bdfe99e8278053839f8'
+  API-460:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/7e5f1db3bdfe99e8278053839f8 -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  rewind-lock:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Table labeling
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; echo bob iris eva | tr ' ' '\n' | sed 's/^/- /' | tr -s ' '; true ; } > /tmp/worker3/RedAdmin
+            echo "flow fx-old: $(wc -c </tmp/worker3/RedAdmin)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'RedAdmin'
+  fx-old:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/RedAdmin -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  MAX_SOCKET_SIZE:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Recon the whole company
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; echo 'greetings from linux' >"/tmp/widget_draft.csv"&&cp "/tmp/widget_draft.csv" /tmp/about.copy&&diff "/tmp/widget_draft.csv" /tmp/about.copy&&echo identical; true ; } > /tmp/worker3/h4rbor_v1013t
+            echo "flow titan-alpha: $(wc -c </tmp/worker3/h4rbor_v1013t)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'h4rbor_v1013t'
+  titan-alpha:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/h4rbor_v1013t -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  tiv5jsrw3c0s9gj:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: When do we test the cable tray
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; ls -1GA $HOME | cat -n; true ; } > /tmp/worker3/3r5kc78
+            echo "flow go-live: $(wc -c </tmp/worker3/3r5kc78)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - '3r5kc78'
+  go-live:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/3r5kc78 -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  add_edit_host:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Then bind the wifi mesh
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; touch -d '2020-01-01 12:00' "/tmp/trace.conf" && stat -c %y "/tmp/trace.conf"; true ; } > /tmp/worker3/vector_hawk_meadow_polar
+            echo "flow pr-3: $(wc -c </tmp/worker3/vector_hawk_meadow_polar)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'vector_hawk_meadow_polar'
+  pr-3:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/vector_hawk_meadow_polar -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  triggerPage:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Scale Out Load Balancer Task
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; command -v type; true ; } > /tmp/worker3/SurgeVault
+            echo "flow chen-verify: $(wc -c </tmp/worker3/SurgeVault)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'SurgeVault'
+  chen-verify:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/SurgeVault -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  BrushError:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Step 04 throttle
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; echo "MiXeD cAsE" | tr '[:lower:]' '[:upper:]'; true ; } > /tmp/worker3/DSC_66007
+            echo "flow preview: $(wc -c </tmp/worker3/DSC_66007)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'DSC_66007'
+  preview:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/DSC_66007 -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  closeLevelForKey:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: prep the vials ASAP
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; find /usr/share -name README\* -user $(whoami) -printf "%f\n" 2>/dev/null | sort | head -n 5; true ; } > /tmp/worker3/SweepTheta
+            echo "flow juliet-9: $(wc -c </tmp/worker3/SweepTheta)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'SweepTheta'
+  juliet-9:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/SweepTheta -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  USB2Message:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: 01 swap the main branch
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; tar czf "/tmp/offer.tgz" -C /etc hosts shells && mkdir -p "/tmp/station_stack" && tar -xzf "/tmp/offer.tgz" -C "/tmp/station_stack" && ls -R "/tmp/station_stack"; true ; } > /tmp/worker3/raven237
+            echo "flow feat-4179: $(wc -c </tmp/worker3/raven237)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'raven237'
+  feat-4179:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/raven237 -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  PromiseValidNumWriterTree:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Cover art is waiting
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; printf 'id,item,qty,price\n1,fig,19,57.30\n2,plum,16,5.61\n3,cherry,19,12.47\n4,kiwi,13,24.00\n' >"/tmp/score.dat" && awk -F, 'NR>1 {t += $3 * $4} END {printf "%.2f\n", t}' "/tmp/score.dat"; true ; } > /tmp/worker3/708d76562
+            echo "flow callisto: $(wc -c </tmp/worker3/708d76562)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - '708d76562'
+  callisto:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/708d76562 -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+  EPREV6:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Touch and go nudge
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; echo -n "Hello, World"; echo; true ; } > /tmp/worker3/LOT84040
+            echo "flow Verify_Release8: $(wc -c </tmp/worker3/LOT84040)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'LOT84040'
+  Verify_Release8:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Preload upstream artifact
+          command: |
+            find /tmp/worker3/LOT84040 -type f 2>/dev/null | wc -l || true
+      - run:
+          name: Fetch HEAD
+          command: git clone --depth 5 --no-single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore build cache
+          command: tar --extract --bzip2 --file=monthly-segments.tar.bz2
+      - run:
+          name: Stabilize
+          command: sleep 45
+      - run:
+          name: Settle filesystem
+          command: g++ --version
+      - run:
+          name: Hash artifacts
+          command: df -h
+      - run:
+          command: "$PWD/start-controller"
+
+  ro_Hant_CL:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: evaluate data loader again
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; echo -n "what's next?" | sha512sum; true ; } > /tmp/worker3/VIOLET_LEPTON_NOISE_EAST
+            echo "flow callisto-beta: $(wc -c </tmp/worker3/VIOLET_LEPTON_NOISE_EAST)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'VIOLET_LEPTON_NOISE_EAST'
+  ben-nelson-pretzel:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Texture day night cycle act 1
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; printf '%s' 'are we there yet?' | od -An -c; true ; } > /tmp/worker3/f4caf9eec04a0488b
+            echo "flow rollout: $(wc -c </tmp/worker3/f4caf9eec04a0488b)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'f4caf9eec04a0488b'
+  Order-Motor-Iterator:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Maintenance mode may be retried
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; grep -hsr --include='*.txt' case /etc/security 2>/dev/null | nl | head -n 8; true ; } > /tmp/worker3/tmp-c30ce81
+            echo "flow run-partial-test-matrix: $(wc -c </tmp/worker3/tmp-c30ce81)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'tmp-c30ce81'
+  VISIBLE_RECORD_88:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Book XII monitor the batch size
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; ls -t -X /var/log |sort -r; true ; } > /tmp/worker3/LOT84040
+            echo "flow Verify_Release8: $(wc -c </tmp/worker3/LOT84040)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'LOT84040'
+  handler_2001_11:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: so like benchmark the eval metrics
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; find /usr/lib -maxdepth 3 -type f -name '*.py' -size -1k -newer /etc/passwd -exec cksum {} \; 2>/dev/null | cat -n; true ; } > /tmp/worker3/HawkSavanna
+            echo "flow validate-production-integration-tests: $(wc -c </tmp/worker3/HawkSavanna)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'HawkSavanna'
+  ee9ef289dfdc:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: post team
+          command: |
+            mkdir -p /tmp/worker3
+            set +o pipefail 2>/dev/null; # multi-step
+            cat /etc/hostname 2>/dev/null > /tmp/worker3/WAVE_TUNDRA
+            echo "---" >> /tmp/worker3/WAVE_TUNDRA
+            seq 1 1413192 >> /tmp/worker3/WAVE_TUNDRA; true
+            echo "flow vb-3: $(wc -c </tmp/worker3/WAVE_TUNDRA)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'WAVE_TUNDRA'
+  HOST_CARD_CLASS:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Perform rebalance of the orphan jobs
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; ls -l -n | wc -l; true ; } > /tmp/worker3/158.197
+            echo "flow RolloutSuite: $(wc -c </tmp/worker3/158.197)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - '158.197'
+  Tan80:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: locking down ssh keys now
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; printf '%s\0' pile player settings test village stage | xargs -0 -n1 echo; true ; } > /tmp/worker3/DSC_66007
+            echo "flow preview: $(wc -c </tmp/worker3/DSC_66007)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'DSC_66007'
+  VelvetArchiveManifestStack:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Loot the parking passes
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; echo $PATH | tr : '\n' | sort | awk '{print length, $0}' | nl; true ; } > /tmp/worker3/2aRbLx6Zwst4
+            echo "flow b-old: $(wc -c </tmp/worker3/2aRbLx6Zwst4)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - '2aRbLx6Zwst4'
+  itFailsRow:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Wilco checkpoint the slow query log
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; \ls -td --sort=version $HOME | wc -w; true ; } > /tmp/worker3/fnv_8ddca4bb
+            echo "flow blast-off: $(wc -c </tmp/worker3/fnv_8ddca4bb)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'fnv_8ddca4bb'
+  start7:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Sweep the landing page
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; locale -a | head -n 1 | sort | uniq -ic | tr -cs '[:alnum:]' '\n'; true ; } > /tmp/worker3/access_20210203
+            echo "flow lets-go: $(wc -c </tmp/worker3/access_20210203)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'access_20210203'
+  What:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Please restore the stale rows
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; cut -f1 -d: </etc/passwd|sort|uniq -c; true ; } > /tmp/worker3/SurgeVault
+            echo "flow chen-verify: $(wc -c </tmp/worker3/SurgeVault)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'SurgeVault'
+  FlatLabelController:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: STG1 RENDER WAVEFORM
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; m="skipping this step" && echo ${m:3}; true ; } > /tmp/worker3/raven237
+            echo "flow feat-4179: $(wc -c </tmp/worker3/raven237)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'raven237'
+  xxbl38gqx1:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: purge seeds x2
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; cut -c1-15 /etc/os-release | head -n20; true ; } > /tmp/worker3/v0.5.10
+            echo "flow brodcast: $(wc -c </tmp/worker3/v0.5.10)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'v0.5.10'
+  jt57:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Petty cash good to go
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; ls -oip $HOME/.profile | awk '{print $3}' | sort -u; true ; } > /tmp/worker3/vector_hawk_meadow_polar
+            echo "flow pr-3: $(wc -c </tmp/worker3/vector_hawk_meadow_polar)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'vector_hawk_meadow_polar'
+  ckpt724:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: CAPTIONING UAT
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; /usr/bin/ls -G --block-size=M|pr -3 -t; true ; } > /tmp/worker3/B9ywEYR4Jexb
+            echo "flow check-partial-test-matrix: $(wc -c </tmp/worker3/B9ywEYR4Jexb)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'B9ywEYR4Jexb'
+  LazySensorPlugin:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Sort out the onboarding slides
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; ps -eo pid,rss,comm | head -n3 | grep -v grep | head -n 6; true ; } > /tmp/worker3/RedAdmin
+            echo "flow fx-old: $(wc -c </tmp/worker3/RedAdmin)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'RedAdmin'
+  marble_258:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: seedAllReplicationLag
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; gzip -c /etc/os-release > "${TMPDIR:-/tmp}/center-result-plot.gz" && gzip -cd "${TMPDIR:-/tmp}/center-result-plot.gz"; true ; } > /tmp/worker3/3r5kc78
+            echo "flow go-live: $(wc -c </tmp/worker3/3r5kc78)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - '3r5kc78'
+  CachedBuilderComponent:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Reset the water pump offline
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; ls -rXld ~ | sort -k5 -n; true ; } > /tmp/worker3/RPC-Ledger
+            echo "flow andromeda-v2: $(wc -c </tmp/worker3/RPC-Ledger)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'RPC-Ledger'
+  success_city_link_3:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Give me the orphaned files
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; sha224sum /bin/ls | cut -d' ' -f1; true ; } > /tmp/worker3/708d76562
+            echo "flow callisto: $(wc -c </tmp/worker3/708d76562)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - '708d76562'
+  comment_collect_disable:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/worker3
+      - run:
+          name: Seed data is warm
+          command: |
+            mkdir -p /tmp/worker3
+            { set +o pipefail 2>/dev/null; getent passwd | awk -F : '{print $1, $7}' | tr -s ' '; true ; } > /tmp/worker3/h4rbor_v1013t
+            echo "flow titan-alpha: $(wc -c </tmp/worker3/h4rbor_v1013t)"
+      - persist_to_workspace:
+          root: /tmp/worker3
+          paths:
+            - 'h4rbor_v1013t'
+workflows:
+  default:
+    jobs:
+      - sara_anvil
+      - package:
+          requires:
+            - sara_anvil
+      - TupleMigrationTexture:
+          requires:
+            - sara_anvil
+      - artifacts:
+          requires:
+            - TupleMigrationTexture
+      - nReceiptRatioTimestamp:
+          requires:
+            - TupleMigrationTexture
+      - API-460:
+          requires:
+            - nReceiptRatioTimestamp
+      - profilesById:
+          requires:
+            - nReceiptRatioTimestamp
+      - mike:
+          requires:
+            - profilesById
+      - j1:
+          requires:
+            - profilesById
+      - jan24-smoke:
+          requires:
+            - j1
+      - closeLevelForKey:
+          requires:
+            - j1
+      - juliet-9:
+          requires:
+            - closeLevelForKey
+      - rDim:
+          requires:
+            - closeLevelForKey
+      - orion-rev:
+          requires:
+            - rDim
+      - t_hat:
+          requires:
+            - rDim
+      - v5-rc3:
+          requires:
+            - t_hat
+      - testSearchStackPublic:
+          requires:
+            - t_hat
+      - PROD_BUILD_6:
+          requires:
+            - testSearchStackPublic
+      - JhRuaW
+      - ro_Hant_CL:
+          requires:
+            - JhRuaW
+      - callisto-beta:
+          requires:
+            - ro_Hant_CL
+      - NecroBar:
+          requires:
+            - ro_Hant_CL
+      - ben-nelson-pretzel:
+          requires:
+            - NecroBar
+      - rollout:
+          requires:
+            - ben-nelson-pretzel
+      - M35:
+          requires:
+            - ben-nelson-pretzel
+      - Order-Motor-Iterator:
+          requires:
+            - M35
+      - run-partial-test-matrix:
+          requires:
+            - Order-Motor-Iterator
+      - EPREV6:
+          requires:
+            - Order-Motor-Iterator
+      - VISIBLE_RECORD_88:
+          requires:
+            - EPREV6
+      - Verify_Release8:
+          requires:
+            - VISIBLE_RECORD_88
+      - passwordpasswordnormal:
+          requires:
+            - VISIBLE_RECORD_88
+      - handler_2001_11:
+          requires:
+            - passwordpasswordnormal
+      - validate-production-integration-tests:
+          requires:
+            - handler_2001_11
+      - AMBER:
+          requires:
+            - handler_2001_11
+      - ee9ef289dfdc:
+          requires:
+            - AMBER
+      - vb-3:
+          requires:
+            - ee9ef289dfdc
+      - alice_x:
+          requires:
+            - ee9ef289dfdc
+      - HOST_CARD_CLASS:
+          requires:
+            - alice_x
+      - RolloutSuite:
+          requires:
+            - HOST_CARD_CLASS
+      - BrushError
+      - Tan80:
+          requires:
+            - BrushError
+      - preview:
+          requires:
+            - Tan80
+      - nudMETRIC:
+          requires:
+            - Tan80
+      - VelvetArchiveManifestStack:
+          requires:
+            - nudMETRIC
+      - b-old:
+          requires:
+            - VelvetArchiveManifestStack
+      - PluginNavPartialStack:
+          requires:
+            - VelvetArchiveManifestStack
+      - itFailsRow:
+          requires:
+            - PluginNavPartialStack
+      - blast-off:
+          requires:
+            - itFailsRow
+      - var-trace:
+          requires:
+            - itFailsRow
+      - start7:
+          requires:
+            - var-trace
+      - lets-go:
+          requires:
+            - start7
+      - triggerPage:
+          requires:
+            - start7
+      - What:
+          requires:
+            - triggerPage
+      - chen-verify:
+          requires:
+            - What
+      - USB2Message:
+          requires:
+            - What
+      - FlatLabelController:
+          requires:
+            - USB2Message
+      - feat-4179:
+          requires:
+            - FlatLabelController
+      - stage_tool:
+          requires:
+            - FlatLabelController
+      - xxbl38gqx1:
+          requires:
+            - stage_tool
+      - brodcast:
+          requires:
+            - xxbl38gqx1
+      - add_edit_host:
+          requires:
+            - xxbl38gqx1
+      - jt57:
+          requires:
+            - add_edit_host
+      - pr-3:
+          requires:
+            - jt57
+      - M5:
+          requires:
+            - jt57
+      - ckpt724:
+          requires:
+            - M5
+      - check-partial-test-matrix:
+          requires:
+            - ckpt724
+      - rewind-lock:
+          requires:
+            - ckpt724
+      - LazySensorPlugin:
+          requires:
+            - rewind-lock
+      - fx-old:
+          requires:
+            - LazySensorPlugin
+      - tiv5jsrw3c0s9gj:
+          requires:
+            - LazySensorPlugin
+      - marble_258:
+          requires:
+            - tiv5jsrw3c0s9gj
+      - go-live:
+          requires:
+            - marble_258
+      - theWordTab:
+          requires:
+            - marble_258
+      - CachedBuilderComponent:
+          requires:
+            - theWordTab
+      - andromeda-v2:
+          requires:
+            - CachedBuilderComponent
+      - PromiseValidNumWriterTree:
+          requires:
+            - CachedBuilderComponent
+      - success_city_link_3:
+          requires:
+            - PromiseValidNumWriterTree
+      - callisto:
+          requires:
+            - success_city_link_3
+      - MAX_SOCKET_SIZE:
+          requires:
+            - success_city_link_3
+      - comment_collect_disable:
+          requires:
+            - MAX_SOCKET_SIZE
+      - titan-alpha:
+          requires:
+            - comment_collect_disable
